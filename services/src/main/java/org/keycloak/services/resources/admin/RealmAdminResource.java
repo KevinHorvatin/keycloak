@@ -449,4 +449,9 @@ public class RealmAdminResource {
     public IdentityProvidersResource getIdentityProviderResource() {
         return new IdentityProvidersResource(realm, session, this.auth);
     }
+
+    @Path("organization")
+    public OrganizationsResource getOrganizationsResource() {
+        return new OrganizationsResource(realm, session, this.auth);
+    }
 }

@@ -4,6 +4,7 @@ import org.keycloak.enums.SslRequired;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.IdentityProviderMapperModel;
 import org.keycloak.models.IdentityProviderModel;
+import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RealmProvider;
@@ -71,6 +72,7 @@ public class CachedRealm {
     private List<RequiredCredentialModel> requiredCredentials = new ArrayList<RequiredCredentialModel>();
     private List<UserFederationProviderModel> userFederationProviders = new ArrayList<UserFederationProviderModel>();
     private List<IdentityProviderModel> identityProviders = new ArrayList<IdentityProviderModel>();
+    private List<OrganizationModel> organizations = new ArrayList<>();
 
     private Map<String, String> browserSecurityHeaders = new HashMap<String, String>();
     private Map<String, String> smtpConfig = new HashMap<String, String>();
@@ -143,8 +145,12 @@ public class CachedRealm {
         for (IdentityProviderMapperModel mapper : model.getIdentityProviderMappers()) {
             identityProviderMappers.add(mapper.getIdentityProviderAlias(), mapper);
         }
+        
+        this.organizations = new ArrayList<>();
 
-
+        for (OrganizationModel organizationModel : model.getOrganizations()) {
+            this.organizations.add(new OrganizationModel(organizationModel));
+        }
 
         smtpConfig.putAll(model.getSmtpConfig());
         browserSecurityHeaders.putAll(model.getBrowserSecurityHeaders());
@@ -360,6 +366,10 @@ public class CachedRealm {
 
     public List<IdentityProviderModel> getIdentityProviders() {
         return identityProviders;
+    }
+
+    public List<OrganizationModel> getOrganizations() {
+        return organizations;
     }
 
     public boolean isInternationalizationEnabled() {

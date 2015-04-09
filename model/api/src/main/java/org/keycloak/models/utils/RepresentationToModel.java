@@ -10,6 +10,7 @@ import org.keycloak.models.ClientIdentityProviderMappingModel;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.FederatedIdentityModel;
 import org.keycloak.models.IdentityProviderModel;
+import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.ProtocolMapperModel;
@@ -26,6 +27,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.FederatedIdentityRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
+import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.keycloak.representations.idm.OAuthClientRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -902,5 +904,22 @@ public class RepresentationToModel {
 
             resource.updateIdentityProviders(result);
         }
+    }
+
+    public static OrganizationModel toModel(OrganizationRepresentation rep) {
+        OrganizationModel organizationModel = new OrganizationModel();
+        organizationModel.setId(rep.getId());
+        organizationModel.setName(rep.getName());
+        organizationModel.setDescription(rep.getDescription());
+        organizationModel.setEnabled(rep.isEnabled());
+
+        /*
+        if (organizationModel.getAttributes() != null && !organizationModel.getAttributes().isEmpty()) {
+            Map<String, String> attrs = new HashMap<String, String>();
+            attrs.putAll(organizationModel.getAttributes());
+            rep.setAttributes(attrs);
+        }
+*/
+        return organizationModel;
     }
 }

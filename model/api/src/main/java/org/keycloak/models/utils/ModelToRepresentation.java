@@ -5,6 +5,7 @@ import org.keycloak.models.ClientIdentityProviderMappingModel;
 import org.keycloak.models.ClientSessionModel;
 import org.keycloak.models.FederatedIdentityModel;
 import org.keycloak.models.IdentityProviderModel;
+import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.ProtocolMapperModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RequiredCredentialModel;
@@ -19,6 +20,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.FederatedIdentityRepresentation;
 import org.keycloak.representations.idm.IdentityProviderRepresentation;
+import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmEventsConfigRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -65,6 +67,22 @@ public class ModelToRepresentation {
             attrs.putAll(user.getAttributes());
             rep.setAttributes(attrs);
         }
+        return rep;
+    }
+
+    public static OrganizationRepresentation toRepresentation(OrganizationModel organizationModel) {
+        OrganizationRepresentation rep = new OrganizationRepresentation();
+        rep.setId(organizationModel.getId());
+        rep.setName(organizationModel.getName());
+        rep.setDescription(organizationModel.getDescription());
+        rep.setEnabled(organizationModel.isEnabled());
+
+        /*if (organizationModel.getAttributes() != null && !organizationModel.getAttributes().isEmpty()) {
+            Map<String, String> attrs = new HashMap<String, String>();
+            attrs.putAll(organizationModel.getAttributes());
+            rep.setAttributes(attrs);
+        }*/
+
         return rep;
     }
 

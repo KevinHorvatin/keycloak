@@ -181,6 +181,12 @@ public interface RealmModel extends RoleContainerModel {
     public IdentityProviderMapperModel getIdentityProviderMapperByName(String brokerAlias, String name);
 
 
+    List<OrganizationModel> getOrganizations();
+    OrganizationModel getOrganizationByName(String name);
+    void addOrganization(OrganizationModel organization);
+    void removeOrganizationByName(String name);
+    void updateOrganization(OrganizationModel organization);
+
     List<UserFederationProviderModel> getUserFederationProviders();
 
     UserFederationProviderModel addUserFederationProvider(String providerName, Map<String, String> config, int priority, String displayName, int fullSyncPeriod, int changedSyncPeriod, int lastSync);

@@ -21,6 +21,7 @@ import org.keycloak.enums.SslRequired;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.IdentityProviderMapperModel;
 import org.keycloak.models.IdentityProviderModel;
+import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ModelDuplicateException;
 import org.keycloak.models.PasswordPolicy;
@@ -75,6 +76,7 @@ public class RealmAdapter implements RealmModel {
     private ClientModel masterAdminApp = null;
     private final Map<String, RoleAdapter> allRoles = new HashMap<String, RoleAdapter>();
     private final Map<String, IdentityProviderModel> allIdProviders = new HashMap<String, IdentityProviderModel>();
+    private final Map<String, OrganizationModel> allOrganizations = new HashMap<>();
 
     public RealmAdapter(KeycloakSession session, RealmEntity realm, InMemoryModel inMemoryModel) {
         this.session = session;
@@ -807,6 +809,45 @@ public class RealmAdapter implements RealmModel {
     public void updateIdentityProvider(IdentityProviderModel identityProvider) {
         removeIdentityProviderByAlias(identityProvider.getAlias());
         addIdentityProvider(identityProvider);
+    }
+
+    @Override
+    public List<OrganizationModel> getOrganizations() {
+        return new ArrayList(allOrganizations.values());
+    }
+
+    @Override
+    public OrganizationModel getOrganizationByName(String name) {
+        for (OrganizationModel organizationModel : getOrganizations()) {
+            if (organizationModel.getName().equals(name)) {
+                return organizationModel;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void addOrganization(OrganizationModel organization) {
+        if (organization.getName() == null) throw new NullPointerException("organization.getName() == null");
+        if (organization.getId() == null) organization.setId(KeycloakModelUtils.generateId());
+        allOrganizations.put(organization.getId(), organization);
+    }
+
+    @Override
+    public void removeOrganizationByName(String name) {
+        for (OrganizationModel organizationModel : getOrganizations()) {
+            if (organizationModel.getName().equals(name)) {
+                allOrganizations.remove(organizationModel.getId());
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void updateOrganization(OrganizationModel organization) {
+        removeOrganizationByName(organization.getName());
+        addOrganization(organization);
     }
 
     @Override

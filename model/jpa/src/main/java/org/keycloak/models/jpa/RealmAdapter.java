@@ -4,6 +4,7 @@ import org.keycloak.enums.SslRequired;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.IdentityProviderMapperModel;
 import org.keycloak.models.IdentityProviderModel;
+import org.keycloak.models.OrganizationModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.RealmModel;
@@ -13,6 +14,7 @@ import org.keycloak.models.UserFederationProviderModel;
 import org.keycloak.models.jpa.entities.ClientEntity;
 import org.keycloak.models.jpa.entities.IdentityProviderEntity;
 import org.keycloak.models.jpa.entities.IdentityProviderMapperEntity;
+import org.keycloak.models.jpa.entities.OrganizationEntity;
 import org.keycloak.models.jpa.entities.RealmAttributeEntity;
 import org.keycloak.models.jpa.entities.RealmEntity;
 import org.keycloak.models.jpa.entities.RequiredCredentialEntity;
@@ -1153,6 +1155,74 @@ public class RealmAdapter implements RealmModel {
 
         em.flush();
     }
+
+    @Override
+    public List<OrganizationModel> getOrganizations() {
+        List<OrganizationModel> organizations = new ArrayList<>();
+
+        for (OrganizationEntity entity: realm.getOrganizations()) {
+            OrganizationModel organizationModel = new OrganizationModel();
+
+            organizationModel.setId(entity.getId());
+            organizationModel.setName(entity.getName());
+            organizationModel.setDescription(entity.getDescription());
+            organizationModel.setEnabled(entity.isEnabled());
+
+            organizations.add(organizationModel);
+        }
+
+        return organizations;
+    }
+
+    @Override
+    public OrganizationModel getOrganizationByName(String name) {
+        for (OrganizationModel organizationModel : getOrganizations()) {
+            if (organizationModel.getName().equals(name)) {
+                return organizationModel;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void addOrganization(OrganizationModel organization) {
+        OrganizationEntity entity = new OrganizationEntity();
+
+        entity.setId(KeycloakModelUtils.generateId());
+        entity.setName(organization.getName());
+        entity.setDescription(organization.getDescription());
+        entity.setEnabled(organization.isEnabled());
+
+        realm.addOrganization(entity);
+
+        em.persist(entity);
+        em.flush();
+    }
+
+    @Override
+    public void removeOrganizationByName(String name) {
+        for (OrganizationEntity entity : realm.getOrganizations()) {
+            if (entity.getName().equals(name)) {
+                em.remove(entity);
+                em.flush();
+            }
+        }
+    }
+
+    @Override
+    public void updateOrganization(OrganizationModel organization) {
+        for (OrganizationEntity entity : this.realm.getOrganizations()) {
+            if (entity.getId().equals(organization.getId())) {
+                entity.setName(organization.getName());
+                entity.setDescription(organization.getDescription());
+                entity.setEnabled(organization.isEnabled());
+            }
+        }
+
+        em.flush();
+    }
+
 
     @Override
     public boolean isIdentityFederationEnabled() {
