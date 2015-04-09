@@ -1,6 +1,8 @@
 package org.keycloak.models.jpa.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -22,6 +24,9 @@ public class OrganizationEntity {
 
     @Column(name="DESCRIPTION")
     protected String description;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="organization")
+    protected Collection<OrganizationRoleMappingEntity> roles = new ArrayList<>();
 
     //private List<String> roleIds;
     //TODO: This will need to change to Map<AttributeType, String>
@@ -60,6 +65,14 @@ public class OrganizationEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Collection<OrganizationRoleMappingEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<OrganizationRoleMappingEntity> roles) {
+        this.roles = roles;
     }
 
     /*public List<String> getRoleIds() {

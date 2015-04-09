@@ -64,7 +64,7 @@ public class OrganizationsResource {
         this.auth.requireManage();
 
         try {
-            this.realm.addOrganization(RepresentationToModel.toModel(representation));
+            this.realm.addOrganization(RepresentationToModel.toModel(realm, representation));
 
             return Response.created(uriInfo.getAbsolutePathBuilder().path(representation.getName()).build()).build();
         } catch (ModelDuplicateException e) {
@@ -73,7 +73,7 @@ public class OrganizationsResource {
     }
 
     @Path("{name}")
-    public OrganizationResource getIdentityProvider(@PathParam("name") String name) {
+    public OrganizationResource getOrganization(@PathParam("name") String name) {
         OrganizationModel organizationModel = getOrganizationByPathParam(name);
 
         if(organizationModel == null) {

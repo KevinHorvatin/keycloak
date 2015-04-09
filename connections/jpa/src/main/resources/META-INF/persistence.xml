@@ -19,6 +19,7 @@
         <class>org.keycloak.models.jpa.entities.IdentityProviderEntity</class>
         <class>org.keycloak.models.jpa.entities.IdentityProviderMapperEntity</class>
         <class>org.keycloak.models.jpa.entities.OrganizationEntity</class>
+        <class>org.keycloak.models.jpa.entities.OrganizationRoleMappingEntity</class>
         <class>org.keycloak.models.jpa.entities.ClientIdentityProviderMappingEntity</class>
         <class>org.keycloak.models.jpa.entities.ProtocolMapperEntity</class>
 

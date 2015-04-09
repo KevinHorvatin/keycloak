@@ -14,7 +14,6 @@ import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserFederationProviderModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
-import org.keycloak.representations.idm.ApplicationRepresentation;
 import org.keycloak.representations.idm.ClientIdentityProviderMappingRepresentation;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -82,6 +81,24 @@ public class ModelToRepresentation {
             attrs.putAll(organizationModel.getAttributes());
             rep.setAttributes(attrs);
         }*/
+
+        List<String> realmRoles = new ArrayList<>();
+        for(RoleModel realmRole : organizationModel.getRealmRoleMappings()) {
+            realmRoles.add(realmRole.getName());
+        }
+        rep.setRealmRoles(realmRoles);
+
+        Map<String, List<String>> clientRoles = new HashMap<>();
+        for(RoleModel clientRole : organizationModel.getClientRoleMappings()) {
+            String clientId = ((ClientModel)clientRole.getContainer()).getClientId();
+
+            if(!clientRoles.containsKey(clientId)) {
+                clientRoles.put(clientId, new ArrayList<String>());
+            }
+
+            clientRoles.get(clientId).add(clientRole.getName());
+        }
+        rep.setClientRoles(clientRoles);
 
         return rep;
     }

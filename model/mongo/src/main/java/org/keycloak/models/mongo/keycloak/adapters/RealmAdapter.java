@@ -834,6 +834,14 @@ public class RealmAdapter extends AbstractMongoAdapter<MongoRealmEntity> impleme
             organizationModel.setDescription(entity.getDescription());
             organizationModel.setEnabled(entity.isEnabled());
 
+            for(String roleId : entity.getRoleIds()) {
+                RoleModel role = getRoleById(roleId);
+
+                if(role != null) {
+                    organizationModel.grantRole(role);
+                }
+            }
+
             organizations.add(organizationModel);
         }
 
@@ -860,6 +868,13 @@ public class RealmAdapter extends AbstractMongoAdapter<MongoRealmEntity> impleme
         entity.setDescription(organization.getDescription());
         entity.setEnabled(organization.isEnabled());
 
+        List<String> roleIds = new ArrayList<>();
+        for(RoleModel role : organization.getRoleMappings()) {
+            roleIds.add(role.getId());
+        }
+
+        entity.setRoleIds(roleIds);
+
         realm.getOrganizations().add(entity);
         updateRealm();
     }
@@ -884,6 +899,13 @@ public class RealmAdapter extends AbstractMongoAdapter<MongoRealmEntity> impleme
                 entity.setName(organization.getName());
                 entity.setDescription(organization.getDescription());
                 entity.setEnabled(organization.isEnabled());
+
+                List<String> roleIds = new ArrayList<>();
+                for(RoleModel role : organization.getRoleMappings()) {
+                    roleIds.add(role.getId());
+                }
+
+                entity.setRoleIds(roleIds);
             }
         }
 

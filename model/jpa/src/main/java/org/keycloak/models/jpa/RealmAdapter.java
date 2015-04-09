@@ -15,6 +15,7 @@ import org.keycloak.models.jpa.entities.ClientEntity;
 import org.keycloak.models.jpa.entities.IdentityProviderEntity;
 import org.keycloak.models.jpa.entities.IdentityProviderMapperEntity;
 import org.keycloak.models.jpa.entities.OrganizationEntity;
+import org.keycloak.models.jpa.entities.OrganizationRoleMappingEntity;
 import org.keycloak.models.jpa.entities.RealmAttributeEntity;
 import org.keycloak.models.jpa.entities.RealmEntity;
 import org.keycloak.models.jpa.entities.RequiredCredentialEntity;
@@ -1168,6 +1169,14 @@ public class RealmAdapter implements RealmModel {
             organizationModel.setDescription(entity.getDescription());
             organizationModel.setEnabled(entity.isEnabled());
 
+            for(OrganizationRoleMappingEntity roleMappingEntity : entity.getRoles()) {
+                RoleModel role = getRoleById(roleMappingEntity.getRoleId());
+
+                if(role != null) {
+                    organizationModel.grantRole(role);
+                }
+            }
+
             organizations.add(organizationModel);
         }
 
@@ -1194,6 +1203,17 @@ public class RealmAdapter implements RealmModel {
         entity.setDescription(organization.getDescription());
         entity.setEnabled(organization.isEnabled());
 
+        List<OrganizationRoleMappingEntity> roleMappingEntities = new ArrayList<>();
+        for(RoleModel role : organization.getRoleMappings()) {
+            OrganizationRoleMappingEntity mapping = new OrganizationRoleMappingEntity();
+            mapping.setOrganization(entity);
+            mapping.setRoleId(role.getId());
+
+            roleMappingEntities.add(mapping);
+        }
+
+        entity.setRoles(roleMappingEntities);
+
         realm.addOrganization(entity);
 
         em.persist(entity);
@@ -1217,12 +1237,43 @@ public class RealmAdapter implements RealmModel {
                 entity.setName(organization.getName());
                 entity.setDescription(organization.getDescription());
                 entity.setEnabled(organization.isEnabled());
+
+                //Update Roles collection
+                Collection<OrganizationRoleMappingEntity> currentMappingEntities = entity.getRoles();
+
+                //We need a map so that we can search by ID
+                Map<String, OrganizationRoleMappingEntity> roleEntityIds = new HashMap<>();
+                for(OrganizationRoleMappingEntity mappingEntity : currentMappingEntities) {
+                    roleEntityIds.put(mappingEntity.getRoleId(), mappingEntity);
+                }
+
+                //if model contains a role that is not in currentMappingEntities then add it to currentMappingEntities
+                //store off ids so we can check the remove case next
+                Set<String> roleModelIds = new HashSet<>();
+                for(RoleModel role : organization.getRoleMappings()) {
+                    roleModelIds.add(role.getId());
+
+                    if(!roleEntityIds.containsKey(role.getId())) {
+                        OrganizationRoleMappingEntity mapping = new OrganizationRoleMappingEntity();
+                        mapping.setOrganization(entity);
+                        mapping.setRoleId(role.getId());
+
+                        currentMappingEntities.add(mapping);
+                    }
+                }
+
+                //if currentMappingEntities contains a role that is not in model then remove it from currentMappingEntities
+                //use the map instead of the original collection so that we can remove items from the original collection
+                for(OrganizationRoleMappingEntity role : roleEntityIds.values()) {
+                    if(!roleModelIds.contains(role.getRoleId())) {
+                        currentMappingEntities.remove(role);
+                    }
+                }
             }
         }
 
         em.flush();
     }
-
 
     @Override
     public boolean isIdentityFederationEnabled() {

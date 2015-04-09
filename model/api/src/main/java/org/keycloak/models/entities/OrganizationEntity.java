@@ -9,7 +9,7 @@ public class OrganizationEntity {
     private String id;
     private String name;
     private String description;
-    //private List<String> roleIds;
+    private List<String> roleIds;
     //TODO: This will need to change to Map<AttributeType, String>
     //private Map<String, String> attributes;
     private boolean enabled;
@@ -38,7 +38,7 @@ public class OrganizationEntity {
         this.description = description;
     }
 
-    /*public List<String> getRoleIds() {
+    public List<String> getRoleIds() {
         return roleIds;
     }
 
@@ -46,7 +46,7 @@ public class OrganizationEntity {
         this.roleIds = roleIds;
     }
 
-    public Map<String, String> getAttributes() {
+    /*public Map<String, String> getAttributes() {
         return attributes;
     }
 

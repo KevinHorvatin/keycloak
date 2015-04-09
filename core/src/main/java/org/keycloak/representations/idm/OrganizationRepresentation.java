@@ -7,12 +7,9 @@ public class OrganizationRepresentation {
 
     protected String id;
     protected String name;
-    protected String companyName;
     protected String description;
     protected List<String> realmRoles;
-    protected Map<String, List<String>> applicationRoles;
-    //TODO: This will need to change to Map<AttributeType, String>
-    protected Map<String, String> attributes;
+    protected Map<String, List<String>> clientRoles;
     protected boolean enabled;
 
     public String getId() {
@@ -31,14 +28,6 @@ public class OrganizationRepresentation {
         this.name = name;
     }
 
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -55,20 +44,12 @@ public class OrganizationRepresentation {
         this.realmRoles = realmRoles;
     }
 
-    public Map<String, List<String>> getApplicationRoles() {
-        return applicationRoles;
+    public Map<String, List<String>> getClientRoles() {
+        return clientRoles;
     }
 
-    public void setApplicationRoles(Map<String, List<String>> applicationRoles) {
-        this.applicationRoles = applicationRoles;
-    }
-
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+    public void setClientRoles(Map<String, List<String>> clientRoles) {
+        this.clientRoles = clientRoles;
     }
 
     public boolean isEnabled() {

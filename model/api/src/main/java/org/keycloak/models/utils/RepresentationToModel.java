@@ -906,7 +906,7 @@ public class RepresentationToModel {
         }
     }
 
-    public static OrganizationModel toModel(OrganizationRepresentation rep) {
+    public static OrganizationModel toModel(RealmModel realm, OrganizationRepresentation rep) {
         OrganizationModel organizationModel = new OrganizationModel();
         organizationModel.setId(rep.getId());
         organizationModel.setName(rep.getName());
@@ -920,6 +920,39 @@ public class RepresentationToModel {
             rep.setAttributes(attrs);
         }
 */
+
+        if (rep.getRealmRoles() != null) {
+            for (String roleString : rep.getRealmRoles()) {
+                RoleModel role = realm.getRole(roleString.trim());
+                if (role == null) {
+                    //TODO: Do we want this?
+                    role = realm.addRole(roleString.trim());
+                }
+
+                organizationModel.grantRole(role);
+            }
+        }
+
+        if (rep.getClientRoles() != null) {
+            for (Map.Entry<String, List<String>> entry : rep.getClientRoles().entrySet()) {
+                ClientModel client = realm.getClientNameMap().get(entry.getKey());
+                if (client == null) {
+                    throw new RuntimeException("Unable to find client role mappings for client: " + entry.getKey());
+                }
+
+                //Add all app roles
+                for (String roleName : entry.getValue()) {
+                    RoleModel role = client.getRole(roleName.trim());
+                    if (role == null) {
+                        //TODO: Do we want this?
+                        role = client.addRole(roleName.trim());
+                    }
+
+                    organizationModel.grantRole(role);
+                }
+            }
+        }
+
         return organizationModel;
     }
 }

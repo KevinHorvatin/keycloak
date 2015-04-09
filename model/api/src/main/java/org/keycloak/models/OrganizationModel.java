@@ -1,5 +1,8 @@
 package org.keycloak.models;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:dane.barentine@software.dell.com">Dane Barentine</a>
  */
@@ -8,6 +11,7 @@ public class OrganizationModel {
     private String id;
     private String name;
     private String description;
+    protected Set<RoleModel> roleMappings = new HashSet<>();
     private boolean enabled;
 
     public OrganizationModel() {
@@ -18,6 +22,7 @@ public class OrganizationModel {
         this.id = model.getId();
         this.name = model.getName();
         this.description = model.getDescription();
+        this.roleMappings = model.getRoleMappings();
         this.enabled = model.isEnabled();
     }
 
@@ -59,12 +64,72 @@ public class OrganizationModel {
 
     String getAttribute(String name);
 
-    Map<String, String> getAttributes();
+    Map<String, String> getAttributes();*/
 
-    Set<RoleModel> getRealmRoleMappings();
-    Set<RoleModel> getApplicationRoleMappings(ApplicationModel app);
-    boolean hasRole(RoleModel role);
-    void grantRole(RoleModel role);
-    Set<RoleModel> getRoleMappings();
-    void deleteRoleMapping(RoleModel role);*/
+    public Set<RoleModel> getRealmRoleMappings() {
+        Set<RoleModel> roleMappings = getRoleMappings();
+        Set<RoleModel> realmMappings = new HashSet<RoleModel>();
+        for (RoleModel role : roleMappings) {
+            RoleContainerModel container = role.getContainer();
+            if (container instanceof RealmModel) {
+                realmMappings.add(role);
+            }
+        }
+        return realmMappings;
+    }
+
+    public Set<RoleModel> getClientRoleMappings() {
+        Set<RoleModel> roleMappings = getRoleMappings();
+        Set<RoleModel> clientMappings = new HashSet<RoleModel>();
+        for (RoleModel role : roleMappings) {
+            RoleContainerModel container = role.getContainer();
+            if (container instanceof ClientModel) {
+                clientMappings.add(role);
+            }
+        }
+        return clientMappings;
+    }
+
+    public Set<RoleModel> getClientRoleMappings(ClientModel app) {
+        Set<RoleModel> roleMappings = getRoleMappings();
+        Set<RoleModel> clientMappings = new HashSet<RoleModel>();
+        for (RoleModel role : roleMappings) {
+            RoleContainerModel container = role.getContainer();
+            if (container instanceof ClientModel) {
+                if (((ClientModel) container).getId().equals(app.getId())) {
+                    clientMappings.add(role);
+                }
+            }
+        }
+        return clientMappings;
+    }
+
+    public boolean hasRole(RoleModel role) {
+        if (getRoleMappings().contains(role)) {
+            return true;
+        }
+
+        //check composite roles
+        Set<RoleModel> mappings = getRoleMappings();
+        for (RoleModel mapping: mappings) {
+            if (mapping.hasRole(role)) return true;
+        }
+        return false;
+    }
+
+    public void grantRole(RoleModel role) {
+        getRoleMappings().add(role);
+    }
+
+    public Set<RoleModel> getRoleMappings() {
+        return roleMappings;
+    }
+
+    public void setRoleMappings(Set<RoleModel> roleMappings) {
+        this.roleMappings = roleMappings;
+    }
+
+    public void deleteRoleMapping(RoleModel role) {
+        getRoleMappings().remove(role);
+    }
 }

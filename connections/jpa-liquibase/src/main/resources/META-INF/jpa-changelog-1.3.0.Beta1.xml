@@ -12,8 +12,18 @@
             </column>
             <column name="REALM_ID" type="VARCHAR(36)"/>
         </createTable>
-        <addPrimaryKey columnNames="ID" constraintName="CONSTRAINT_ORG_ID" tableName="ORGANIZATION"/>
-        <addForeignKeyConstraint baseColumnNames="REALM_ID" baseTableName="ORGANIZATION" constraintName="CONSTRAINT_D0" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REALM"/>
+        <createTable tableName="ORGANIZATION_ROLE_MAPPING">
+            <column name="ROLE_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ORGANIZATION_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="ID" constraintName="PK_86F745A1B0AA486D8799E523B4B9F245" tableName="ORGANIZATION"/>
+        <addForeignKeyConstraint baseColumnNames="REALM_ID" baseTableName="ORGANIZATION" constraintName="FK_ADEE38080EF44AB5B78AB31C942124D9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REALM"/>
+        <addPrimaryKey columnNames="ROLE_ID, ORGANIZATION_ID" constraintName="PK_CD8EEE27A92643ED806D314A6BF3C447" tableName="ORGANIZATION_ROLE_MAPPING"/>
+        <addForeignKeyConstraint baseColumnNames="ORGANIZATION_ID" baseTableName="ORGANIZATION_ROLE_MAPPING" constraintName="FK_5FC9015CFFAC4034A90DCFF1D7D020E6" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="ORGANIZATION"/>
         <customChange class="org.keycloak.connections.jpa.updater.liquibase.custom.JpaUpdate1_3_0_Beta1"/>
     </changeSet>
 </databaseChangeLog>
